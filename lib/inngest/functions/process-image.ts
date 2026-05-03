@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { env } from "@/env";
+import { env, isCvServiceConfigured } from "@/env";
 import { cvClient } from "@/lib/cv/client";
 import { db } from "@/lib/db";
 import { matches } from "@/lib/db/schema/matches";
@@ -7,6 +7,7 @@ import { processingJobs } from "@/lib/db/schema/processingJobs";
 import { videos } from "@/lib/db/schema/videos";
 import { inngest } from "../client";
 import { deliveryPersisted, imageUploaded } from "../events";
+import { failMatchMissingCv } from "../failMissingCv";
 import { persistDelivery } from "../persistDelivery";
 
 export const processImage = inngest.createFunction(
@@ -18,6 +19,19 @@ export const processImage = inngest.createFunction(
   },
   async ({ event, step }) => {
     const { matchId, videoId } = event.data;
+
+    const cvOk = await step.run("check-cv-config", async () =>
+      isCvServiceConfigured()
+    );
+    if (!cvOk) {
+      await step.run("abort-missing-cv", async () =>
+        failMatchMissingCv({
+          matchId,
+          inngestEventId: event.id,
+        })
+      );
+      return { matchId, aborted: true as const };
+    }
 
     await step.run("init-job", async () => {
       await db.insert(processingJobs).values({

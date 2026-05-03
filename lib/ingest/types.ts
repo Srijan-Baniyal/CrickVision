@@ -7,15 +7,15 @@ export type IngestKind = "video" | "image";
 
 export type IngestSourceKind = "upload" | "url" | "image" | "live" | "pwa";
 
-export type IngestResult = {
+export interface IngestResult {
+  kind: IngestKind;
   matchId: string;
   mediaUrl: string;
-  kind: IngestKind;
   sourceKind: IngestSourceKind;
   sourceRef?: string | null;
-};
+}
 
-export type IngestError = {
+export interface IngestError {
   code:
     | "UNAUTHORIZED"
     | "VALIDATION"
@@ -25,7 +25,7 @@ export type IngestError = {
     | "RATE_LIMIT"
     | "UNKNOWN";
   message: string;
-};
+}
 
 export type IngestActionResult =
   | { ok: true; result: IngestResult }

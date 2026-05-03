@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { requireSession } from "@/lib/auth";
+import { requireSessionForDbWrites } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { matches } from "@/lib/db/schema/matches";
 import { inngest } from "@/lib/inngest/client";
@@ -7,18 +7,18 @@ import { videoUrlRequested } from "@/lib/inngest/events";
 import { rateLimitIngest } from "@/lib/rate-limit";
 import type { IngestActionResult } from "./types";
 
-export type UrlIngestInput = {
+export interface UrlIngestInput {
+  format: "T20" | "ODI" | "Test" | "Highlights";
   title: string;
   url: string;
-  format: "T20" | "ODI" | "Test" | "Highlights";
-};
+}
 
 const urlSchema = z.string().url().max(2048);
 
 export async function ingestUrl(
   input: UrlIngestInput
 ): Promise<IngestActionResult> {
-  const session = await requireSession();
+  const session = await requireSessionForDbWrites();
 
   const rl = await rateLimitIngest(session.userId);
   if (!rl.ok) {

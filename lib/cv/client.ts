@@ -47,12 +47,12 @@ async function fetchJson<T>(
   }
 }
 
-export type StartJobArgs = {
-  matchId: string;
-  videoUrl: string;
+export interface StartJobArgs {
   callbackUrl: string;
   hmacSecret: string;
-};
+  matchId: string;
+  videoUrl: string;
+}
 
 export const cvClient = {
   startJob: (args: StartJobArgs) =>

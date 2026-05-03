@@ -11,8 +11,6 @@ import {
   rateLimitHeaders,
 } from "@/lib/rate-limit";
 
-export const runtime = "nodejs";
-
 const querySchema = z.object({
   sinceHours: z.coerce.number().int().positive().max(720).default(24),
   limit: z.coerce.number().int().positive().max(5000).default(1000),

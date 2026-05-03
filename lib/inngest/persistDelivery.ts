@@ -82,10 +82,10 @@ async function findOrCreateOver(
   return created.id;
 }
 
-export type PersistResult = {
+export interface PersistResult {
   deliveryId: string;
   isNew: boolean;
-};
+}
 
 export async function persistDelivery(
   payload: DeliveryPayload

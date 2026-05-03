@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { requireSession } from "@/lib/auth";
+import { requireSessionForDbWrites } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { matches } from "@/lib/db/schema/matches";
 import { videos } from "@/lib/db/schema/videos";
@@ -9,11 +9,11 @@ import { rateLimitIngest } from "@/lib/rate-limit";
 import { putObject } from "@/lib/storage";
 import { INGEST_LIMITS, type IngestActionResult } from "./types";
 
-export type FileUploadInput = {
-  title: string;
-  format: "T20" | "ODI" | "Test" | "Highlights";
+export interface FileUploadInput {
   file: File;
-};
+  format: "T20" | "ODI" | "Test" | "Highlights";
+  title: string;
+}
 
 const MAX = INGEST_LIMITS.maxVideoBytes;
 const PREFIX = INGEST_LIMITS.videoMimePrefix;
@@ -21,7 +21,7 @@ const PREFIX = INGEST_LIMITS.videoMimePrefix;
 export async function ingestFileUpload(
   input: FileUploadInput
 ): Promise<IngestActionResult> {
-  const session = await requireSession();
+  const session = await requireSessionForDbWrites();
 
   const rl = await rateLimitIngest(session.userId);
   if (!rl.ok) {

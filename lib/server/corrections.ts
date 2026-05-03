@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireSession } from "@/lib/auth";
+import { requireSessionForDbWrites } from "@/lib/auth";
 import { ballTypeSchema, shotTypeSchema } from "@/lib/cv/schema";
 import { db } from "@/lib/db";
 import { deliveryCorrections } from "@/lib/db/schema/deliveryCorrections";
@@ -32,7 +32,7 @@ export async function submitCorrectionAction(
   formData: FormData
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
-    const session = await requireSession();
+    const session = await requireSessionForDbWrites();
 
     const crl = await rateLimitCorrectionSubmit(session.userId);
     if (!crl.ok) {

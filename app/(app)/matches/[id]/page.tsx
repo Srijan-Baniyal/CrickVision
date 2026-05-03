@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { ProcessingStatus } from "@/components/match/ProcessingStatus";
 import {
   Card,
@@ -7,11 +8,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { requireSession } from "@/lib/auth";
 import { listDeliveriesForMatch } from "@/lib/db/queries/deliveries";
 import { getMatchById } from "@/lib/db/queries/matches";
 
-export default async function MatchOverviewPage({
+function MatchOverviewSkeleton() {
+  return (
+    <div className="space-y-6">
+      <Skeleton className="h-24 w-full" />
+      <div className="grid gap-4 md:grid-cols-4">
+        <Skeleton className="h-28 w-full" />
+        <Skeleton className="h-28 w-full" />
+        <Skeleton className="h-28 w-full" />
+        <Skeleton className="h-28 w-full" />
+      </div>
+      <Skeleton className="h-48 w-full" />
+    </div>
+  );
+}
+
+async function MatchOverviewContent({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -58,6 +75,18 @@ export default async function MatchOverviewPage({
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function MatchOverviewPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <Suspense fallback={<MatchOverviewSkeleton />}>
+      <MatchOverviewContent params={params} />
+    </Suspense>
   );
 }
 

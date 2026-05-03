@@ -20,7 +20,7 @@ export type DeliveryRow = Delivery & {
   batsmanName: string | null;
 };
 
-export async function listDeliveriesForMatch(
+export function listDeliveriesForMatch(
   matchId: string
 ): Promise<DeliveryRow[]> {
   return safe(async () => {
@@ -55,7 +55,7 @@ export async function listDeliveriesForMatch(
   }, []);
 }
 
-export async function getDeliveryById(deliveryId: string): Promise<
+export function getDeliveryById(deliveryId: string): Promise<
   | (Delivery & {
       overNumber: number;
       inningsNumber: number;

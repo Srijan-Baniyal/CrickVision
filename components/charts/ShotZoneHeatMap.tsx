@@ -78,7 +78,7 @@ export function ShotZoneHeatMap({ deliveries }: ChartProps) {
               d={annulusSlice(startAngle, endAngle, innerR, outerR, CENTER)}
               fill={color(count)}
               fillOpacity={0.9}
-              key={i}
+              key={`angle-${angleBin}-radial-${radialBin}`}
               stroke="var(--background)"
               strokeOpacity={0.3}
             />

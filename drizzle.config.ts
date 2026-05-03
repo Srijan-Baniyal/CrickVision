@@ -1,5 +1,9 @@
-import "dotenv/config";
+import { config as loadEnv } from "dotenv";
 import { defineConfig } from "drizzle-kit";
+
+// Same precedence as Next.js: `.env` then `.env.local` overrides.
+loadEnv({ path: ".env" });
+loadEnv({ path: ".env.local", override: true });
 
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
@@ -14,6 +18,7 @@ export default defineConfig({
     url: databaseUrl,
   },
   verbose: true,
-  strict: true,
+  // `true` prompts for confirmation on every push (needs an interactive TTY).
+  strict: false,
   casing: "snake_case",
 });

@@ -1,10 +1,12 @@
 import { eq } from "drizzle-orm";
+import { isCvServiceConfigured } from "@/env";
 import { cvClient } from "@/lib/cv/client";
 import { db } from "@/lib/db";
 import { matches } from "@/lib/db/schema/matches";
 import { videos } from "@/lib/db/schema/videos";
 import { inngest } from "../client";
 import { videoUploaded, videoUrlRequested } from "../events";
+import { failMatchMissingCv } from "../failMissingCv";
 
 export const downloadUrl = inngest.createFunction(
   {
@@ -15,6 +17,19 @@ export const downloadUrl = inngest.createFunction(
   },
   async ({ event, step }) => {
     const { matchId, url, userId } = event.data;
+
+    const cvOk = await step.run("check-cv-config", async () =>
+      isCvServiceConfigured()
+    );
+    if (!cvOk) {
+      await step.run("abort-missing-cv", async () =>
+        failMatchMissingCv({
+          matchId,
+          inngestEventId: event.id,
+        })
+      );
+      return { matchId, userId, aborted: true as const };
+    }
 
     const downloaded = await step.run("yt-dlp", async () =>
       cvClient.downloadUrl({ url, matchId })

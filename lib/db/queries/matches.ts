@@ -10,7 +10,6 @@ const safe = async <T>(fn: () => Promise<T>, fallback: T): Promise<T> => {
     return await fn();
   } catch (err) {
     if (process.env.NODE_ENV !== "production") {
-      // biome-ignore lint/suspicious/noConsole: dev-time hint when DB isn't wired yet
       console.warn(
         "[db] query failed (using fallback). Have you set DATABASE_URL in .env.local?",
         err instanceof Error ? err.message : err
@@ -25,7 +24,7 @@ export type MatchRow = Match & {
   deliveryCount: number;
 };
 
-export async function listMatchesForUser(userId: string): Promise<MatchRow[]> {
+export function listMatchesForUser(userId: string): Promise<MatchRow[]> {
   return safe(async () => {
     const rows = await db
       .select({
@@ -58,7 +57,7 @@ export async function listMatchesForUser(userId: string): Promise<MatchRow[]> {
   }, []);
 }
 
-export async function getMatchById(
+export function getMatchById(
   matchId: string,
   userId: string
 ): Promise<MatchRow | null> {

@@ -14,7 +14,7 @@ export const matches = pgTable(
   "matches",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    userId: varchar("user_id", { length: 64 })
+    userId: varchar("user_id", { length: 255 })
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     title: text("title").notNull(),

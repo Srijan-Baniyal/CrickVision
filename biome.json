@@ -41,5 +41,43 @@
     "ultracite/biome/core",
     "ultracite/biome/react",
     "ultracite/biome/next"
+  ],
+  "overrides": [
+    {
+      "includes": ["components/ui/**"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noNoninteractiveElementInteractions": "off",
+            "noRedundantRoles": "off",
+            "useAriaPropsForRole": "off",
+            "useFocusableInteractive": "off",
+            "useKeyWithClickEvents": "off",
+            "useSemanticElements": "off"
+          },
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          },
+          "correctness": {
+            "noNestedComponentDefinitions": "off",
+            "useExhaustiveDependencies": "off"
+          },
+          "performance": {
+            "noNamespaceImport": "off"
+          },
+          "security": {
+            "noDangerouslySetInnerHtml": "off"
+          },
+          "style": {
+            "noNestedTernary": "off"
+          },
+          "suspicious": {
+            "noArrayIndexKey": "off",
+            "noDocumentCookie": "off",
+            "noDoubleEquals": "off"
+          }
+        }
+      }
+    }
   ]
 }

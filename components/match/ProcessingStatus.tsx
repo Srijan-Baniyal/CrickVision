@@ -15,6 +15,16 @@ const TITLES: Record<Status, string> = {
   failed: "Analysis failed",
 };
 
+function statusDescription(status: Status, deliveryCount: number): string {
+  if (status === "processing") {
+    return `Extracting deliveries… ${deliveryCount} found so far.`;
+  }
+  if (status === "uploading") {
+    return "Source media is being uploaded to storage.";
+  }
+  return "Open the match logs to see the failure detail.";
+}
+
 export function ProcessingStatus({
   matchId,
   status: initialStatus,
@@ -76,13 +86,7 @@ export function ProcessingStatus({
         <Spinner className="size-4" />
       ) : null}
       <AlertTitle>{TITLES[status]}</AlertTitle>
-      <AlertDescription>
-        {status === "processing"
-          ? `Extracting deliveries… ${count} found so far.`
-          : status === "uploading"
-            ? "Source media is being uploaded to storage."
-            : "Open the match logs to see the failure detail."}
-      </AlertDescription>
+      <AlertDescription>{statusDescription(status, count)}</AlertDescription>
     </Alert>
   );
 }

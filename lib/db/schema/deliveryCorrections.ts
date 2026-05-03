@@ -20,7 +20,7 @@ export const deliveryCorrections = pgTable(
     deliveryId: uuid("delivery_id")
       .notNull()
       .references(() => deliveries.id, { onDelete: "cascade" }),
-    userId: varchar("user_id", { length: 64 })
+    userId: varchar("user_id", { length: 255 })
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     fieldName: text("field_name").notNull(),

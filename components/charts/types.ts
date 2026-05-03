@@ -1,5 +1,5 @@
 import type { DeliveryRow } from "@/lib/db/queries/deliveries";
 
-export type ChartProps = {
+export interface ChartProps {
   deliveries: readonly DeliveryRow[];
-};
+}

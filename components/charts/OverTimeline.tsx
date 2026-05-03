@@ -12,11 +12,11 @@ import {
 } from "recharts";
 import type { ChartProps } from "./types";
 
-type OverPoint = {
+interface OverPoint {
   over: string;
   runs: number;
   wickets: number;
-};
+}
 
 const HEIGHT = 240;
 

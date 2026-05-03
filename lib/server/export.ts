@@ -68,11 +68,11 @@ function deliveryToRow(d: DeliveryRow): Record<string, unknown> {
   };
 }
 
-export type ExportResult = {
-  filename: string;
-  contentType: string;
+export interface ExportResult {
   body: string;
-};
+  contentType: string;
+  filename: string;
+}
 
 export async function exportMatchAction(
   matchId: string,

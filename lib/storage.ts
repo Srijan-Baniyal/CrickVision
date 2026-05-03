@@ -5,18 +5,31 @@ import { env } from "@/env";
 // (R2, S3, etc.) change this file — the adapter signatures stay the same.
 // See AGENTS.md "Project structure" for the boundary rule.
 
-export type StoredObject = {
-  url: string;
-  pathname: string;
-  contentType: string;
+export interface StoredObject {
   byteSize: number;
-};
-
-export type PutOptions = {
-  pathname: string;
   contentType: string;
+  pathname: string;
+  url: string;
+}
+
+export interface PutOptions {
   body: Blob | ArrayBuffer | Buffer | ReadableStream;
-};
+  contentType: string;
+  pathname: string;
+}
+
+function byteLengthOfBody(body: PutOptions["body"]): number {
+  if (body instanceof Blob) {
+    return body.size;
+  }
+  if (body instanceof ArrayBuffer) {
+    return body.byteLength;
+  }
+  if (body instanceof Buffer) {
+    return body.byteLength;
+  }
+  return 0;
+}
 
 export async function putObject(opts: PutOptions): Promise<StoredObject> {
   const blob = await put(opts.pathname, opts.body, {
@@ -26,14 +39,7 @@ export async function putObject(opts: PutOptions): Promise<StoredObject> {
     addRandomSuffix: true,
     allowOverwrite: false,
   });
-  const byteSize =
-    opts.body instanceof Blob
-      ? opts.body.size
-      : opts.body instanceof ArrayBuffer
-        ? opts.body.byteLength
-        : opts.body instanceof Buffer
-          ? opts.body.byteLength
-          : 0;
+  const byteSize = byteLengthOfBody(opts.body);
   return {
     url: blob.url,
     pathname: blob.pathname,
@@ -42,11 +48,11 @@ export async function putObject(opts: PutOptions): Promise<StoredObject> {
   };
 }
 
-export type ClientUploadToken = {
-  uploadUrl: string;
-  pathname: string;
+export interface ClientUploadToken {
   contentType: string;
-};
+  pathname: string;
+  uploadUrl: string;
+}
 
 const SIGNED_TTL_SECONDS = 60 * 10;
 

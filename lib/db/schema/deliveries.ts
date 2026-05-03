@@ -33,47 +33,51 @@ import { players } from "./players";
 // dismissalType, commentary) come from Gemini structured output.
 // See AGENTS.md "Pipeline correctness rules" for the why.
 
-export type TrajectoryFrame = {
+export interface TrajectoryFrame {
+  conf: number;
+  phase: "approach" | "bounce" | "afterBounce" | "impact" | "afterImpact";
   tMs: number;
   xPitchM: number;
   yPitchM: number;
   zHeightM: number;
-  conf: number;
-  phase: "approach" | "bounce" | "afterBounce" | "impact" | "afterImpact";
-};
+}
 
-export type Trajectory = {
+export interface Trajectory {
   frames: TrajectoryFrame[];
-};
+}
 
-export type PitchPoint = { xPitchM: number; yPitchM: number; conf: number };
+export interface PitchPoint {
+  conf: number;
+  xPitchM: number;
+  yPitchM: number;
+}
 
-export type ImpactPoint = {
+export interface ImpactPoint {
+  conf: number;
   xPitchM: number;
   yPitchM: number;
   zHeightM: number;
-  conf: number;
-};
+}
 
-export type EndPoint = {
+export interface EndPoint {
+  conf: number;
+  terminator: "boundary" | "fielded" | "wicket" | "deadBall";
   xPitchM: number;
   yPitchM: number;
-  terminator: "boundary" | "fielded" | "wicket" | "deadBall";
-  conf: number;
-};
+}
 
 export type ConfidenceMap = Partial<Record<string, number>>;
 
-export type DebugBlob = {
+export interface DebugBlob {
   geminiRaw?: unknown;
+  homographyResidual?: number;
+  stageDurationsMs?: Record<string, number>;
   trackSummary?: {
     frames: number;
     lostAtMs?: number;
     reacquiredAtMs?: number;
   };
-  homographyResidual?: number;
-  stageDurationsMs?: Record<string, number>;
-};
+}
 
 export const deliveries = pgTable(
   "deliveries",

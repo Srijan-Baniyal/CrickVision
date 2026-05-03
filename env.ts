@@ -6,6 +6,10 @@ const PLACEHOLDER = "set-me-in-.env.local" as const;
 const isPlaceholder = (val: string | undefined): boolean =>
   !val || val.startsWith(PLACEHOLDER);
 
+/** Local `next build` sets NODE_ENV=production; still allow unset CV until Modal is wired. CI/Vercel must use real values. */
+const isStrictDeployTarget =
+  process.env.VERCEL === "1" || process.env.CI === "true";
+
 const requiredString = (name: string) =>
   z
     .string()
@@ -13,6 +17,15 @@ const requiredString = (name: string) =>
     .refine(
       (val) => !isPlaceholder(val),
       `${name} is set to a placeholder; configure it in .env.local`
+    );
+
+const cvSecretString = (name: string) =>
+  z
+    .string()
+    .min(1, `${name} is required`)
+    .refine(
+      (val) => !(isPlaceholder(val) && isStrictDeployTarget),
+      `${name} is set to a placeholder; configure it for CI/Vercel or use a real Modal endpoint locally`
     );
 
 const optionalUrl = z.string().url().optional().or(z.literal(""));
@@ -32,9 +45,9 @@ export const env = createEnv({
 
     CLERK_SECRET_KEY: requiredString("CLERK_SECRET_KEY"),
 
-    CV_SERVICE_URL: requiredString("CV_SERVICE_URL"),
-    CV_SERVICE_TOKEN: requiredString("CV_SERVICE_TOKEN"),
-    CV_WEBHOOK_HMAC_SECRET: requiredString("CV_WEBHOOK_HMAC_SECRET"),
+    CV_SERVICE_URL: cvSecretString("CV_SERVICE_URL"),
+    CV_SERVICE_TOKEN: cvSecretString("CV_SERVICE_TOKEN"),
+    CV_WEBHOOK_HMAC_SECRET: cvSecretString("CV_WEBHOOK_HMAC_SECRET"),
 
     GEMINI_API_KEY: requiredString("GEMINI_API_KEY"),
 
@@ -74,3 +87,12 @@ export const env = createEnv({
 export const isPlaceholderEnv = (): boolean =>
   isPlaceholder(process.env.DATABASE_URL) ||
   isPlaceholder(process.env.CLERK_SECRET_KEY);
+
+/** False when CV_* env vars are still placeholders — Inngest must not call Modal until these are real. */
+export function isCvServiceConfigured(): boolean {
+  return !(
+    isPlaceholder(env.CV_SERVICE_URL) ||
+    isPlaceholder(env.CV_SERVICE_TOKEN) ||
+    isPlaceholder(env.CV_WEBHOOK_HMAC_SECRET)
+  );
+}

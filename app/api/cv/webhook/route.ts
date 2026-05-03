@@ -9,8 +9,6 @@ import {
   cvJobFailed,
 } from "@/lib/inngest/events";
 
-export const runtime = "nodejs";
-
 const SIGNATURE_HEADER = "x-cv-signature";
 
 function verifySignature(rawBody: string, signature: string | null): boolean {

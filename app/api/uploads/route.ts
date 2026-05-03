@@ -4,8 +4,6 @@ import { env } from "@/env";
 import { requireSession } from "@/lib/auth";
 import { HttpRateLimitError, rateLimitUploadToken } from "@/lib/rate-limit";
 
-export const runtime = "nodejs";
-
 const ALLOWED_VIDEO = ["video/mp4", "video/quicktime", "video/webm"];
 const ALLOWED_IMAGE = ["image/jpeg", "image/png", "image/webp"];
 const MAX_VIDEO_BYTES = 500 * 1024 * 1024;

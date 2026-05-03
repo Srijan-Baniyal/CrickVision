@@ -5,9 +5,6 @@ import { matches } from "@/lib/db/schema/matches";
 import { processingJobs } from "@/lib/db/schema/processingJobs";
 import { rateLimitHeaders, rateLimitSse } from "@/lib/rate-limit";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 const POLL_INTERVAL_MS = 1500;
 const HEARTBEAT_INTERVAL_MS = 15_000;
 

@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { requireSession } from "@/lib/auth";
+import { requireSessionForDbWrites } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { matches } from "@/lib/db/schema/matches";
 import { videos } from "@/lib/db/schema/videos";
@@ -9,10 +9,10 @@ import { rateLimitIngest } from "@/lib/rate-limit";
 import { putObject } from "@/lib/storage";
 import { INGEST_LIMITS, type IngestActionResult } from "./types";
 
-export type ImageIngestInput = {
-  title: string;
+export interface ImageIngestInput {
   file: File;
-};
+  title: string;
+}
 
 const MAX = INGEST_LIMITS.maxImageBytes;
 const PREFIX = INGEST_LIMITS.imageMimePrefix;
@@ -20,7 +20,7 @@ const PREFIX = INGEST_LIMITS.imageMimePrefix;
 export async function ingestImage(
   input: ImageIngestInput
 ): Promise<IngestActionResult> {
-  const session = await requireSession();
+  const session = await requireSessionForDbWrites();
 
   const rl = await rateLimitIngest(session.userId);
   if (!rl.ok) {
