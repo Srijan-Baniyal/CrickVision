@@ -2,6 +2,7 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 const PLACEHOLDER = "set-me-in-.env.local" as const;
+const TRAILING_SLASH_RE = /\/$/;
 
 const isPlaceholder = (val: string | undefined): boolean =>
   !val || val.startsWith(PLACEHOLDER);
@@ -95,4 +96,16 @@ export function isCvServiceConfigured(): boolean {
     isPlaceholder(env.CV_SERVICE_TOKEN) ||
     isPlaceholder(env.CV_WEBHOOK_HMAC_SECRET)
   );
+}
+
+export function getAppUrl(): string {
+  const direct = env.APP_URL ?? env.NEXT_PUBLIC_APP_URL;
+  if (direct && direct.trim().length > 0) {
+    return direct.replace(TRAILING_SLASH_RE, "");
+  }
+  const vercelUrl = process.env.VERCEL_URL;
+  if (vercelUrl && vercelUrl.trim().length > 0) {
+    return `https://${vercelUrl}`;
+  }
+  return "http://localhost:3000";
 }

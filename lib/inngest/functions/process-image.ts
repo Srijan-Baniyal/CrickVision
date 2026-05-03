@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { env, isCvServiceConfigured } from "@/env";
+import { env, getAppUrl, isCvServiceConfigured } from "@/env";
 import { cvClient } from "@/lib/cv/client";
 import { db } from "@/lib/db";
 import { matches } from "@/lib/db/schema/matches";
@@ -59,7 +59,7 @@ export const processImage = inngest.createFunction(
       cvClient.processImage({
         matchId,
         imageUrl,
-        callbackUrl: `${env.APP_URL ?? "http://localhost:3000"}/api/cv/webhook`,
+        callbackUrl: `${getAppUrl()}/api/cv/webhook`,
         hmacSecret: env.CV_WEBHOOK_HMAC_SECRET,
       })
     );
