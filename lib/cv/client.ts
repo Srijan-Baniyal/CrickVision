@@ -27,14 +27,16 @@ const headers = (extra: Record<string, string> = {}) => ({
 });
 
 const REQUEST_TIMEOUT_MS = 60_000;
+const DOWNLOAD_TIMEOUT_MS = 600_000;
 
 async function fetchJson<T>(
   url: string,
   init: RequestInit,
-  schema: z.ZodType<T>
+  schema: z.ZodType<T>,
+  timeoutMs: number = REQUEST_TIMEOUT_MS
 ): Promise<T> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const res = await fetch(url, { ...init, signal: controller.signal });
     if (!res.ok) {
@@ -74,7 +76,8 @@ export const cvClient = {
         headers: headers(),
         body: JSON.stringify(args),
       },
-      downloadResponseSchema
+      downloadResponseSchema,
+      DOWNLOAD_TIMEOUT_MS
     ),
 
   processImage: (args: {
