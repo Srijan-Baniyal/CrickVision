@@ -21,10 +21,10 @@ GPU_IMAGE = (
     .pip_install_from_pyproject("pyproject.toml", optional_dependencies=["ml"])
 )
 
-app_spec = modal.App("cricket-cv")
+app = modal.App("cricket-cv")
 
 # CPU container — handles ingest + stub pipeline, scales to zero quickly.
-@app_spec.function(
+@app.function(
     image=CPU_IMAGE,
     secrets=[modal.Secret.from_name("cricket-cv")],
     timeout=600,
@@ -41,7 +41,7 @@ def fastapi_app():  # type: ignore[no-untyped-def]
 # GPU container — engaged when CV_USE_REAL_PIPELINE=1. Modal routes the same
 # /v1/jobs endpoint here when the Inngest function explicitly targets it; for
 # v1 we keep both behind a single URL and let the env var decide.
-@app_spec.function(
+@app.function(
     image=GPU_IMAGE,
     secrets=[modal.Secret.from_name("cricket-cv")],
     gpu="T4",
@@ -68,7 +68,7 @@ def gpu_pipeline_runner(payload: dict) -> dict:
 ft_volume = modal.Volume.from_name("cricket-cv-finetune", create_if_missing=True)
 
 
-@app_spec.function(
+@app.function(
     image=CPU_IMAGE,
     secrets=[modal.Secret.from_name("cricket-cv")],
     schedule=modal.Cron("0 3 * * *"),  # 03:00 UTC nightly
