@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "bun fix --skip=correctness/noUnusedImports"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": ".cursor/hooks/secret-scan.sh",
+        "matcher": "UserPromptSubmit",
+        "timeout": 5
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/check.sh",
+        "timeout": 60,
+        "loop_limit": 1
+      }
+    ]
+  },
+  "version": 1
+}

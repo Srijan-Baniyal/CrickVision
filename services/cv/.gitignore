@@ -1,0 +1,24 @@
+__pycache__/
+*.pyc
+.venv/
+.uv/
+uv.lock
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Modal local cache
+.modal/
+
+# Pipeline artifacts
+/tmp/
+/data/
+frames_*/
+*.mp4
+*.jpg
+*.png
+*.webm
+
+# Tests
+.coverage
+htmlcov/
